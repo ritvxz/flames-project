@@ -119,7 +119,7 @@ const App = () => {
       className="mt-1 accent-blue-500"
     />
     <span>
-      I agree that the entered names may be stored for fun analytics purposes.
+      I agree
     </span>
   </label>
 </div>
@@ -135,7 +135,8 @@ const App = () => {
             transition-all duration-200
             shadow-lg
           "
-          onClick={caluclateFlames}
+          onClick=
+          {calculateFlames}
         >
           Calculate
         </button>
