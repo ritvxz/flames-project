@@ -4,41 +4,65 @@ const App = () => {
   const [name1,setName1] = useState("");
   const [name2,setName2] = useState("");
   const [result,setResult] = useState("");
+  const [consent, setConsent] = useState(false);
 
-  const caluclateFlames = () =>{
-    if(!name1 || !name2) {
-      setResult("Please Enter both the names");
-      return;
-    }
-    let n1 = name1.toLowerCase().split("");
-    let n2 = name2.toLowerCase().split("");
 
-    for(let i=0;i<n1.length;i++) {
-      let index = n2.indexOf(n1[i]);
-      if(index !== -1) {
-        n1.splice(i,1);
-        n2.splice(index,1);
-        i--;
-      }
-    }
-    let count = n1.length+n2.length;
+ const calculateFlames = () => {
+  if (!name1 || !name2) {
+    setResult("Please Enter both the names");
+    return;
+  }
 
-    let flames = ["F", "L", "A", "M", "E", "S"];
-    let index = 0;
-    while(flames.length >1){
-      index = (index + count -1) %flames.length;
-      flames.splice(index,1);
+  let n1 = name1.toLowerCase().split("");
+  let n2 = name2.toLowerCase().split("");
+
+  for (let i = 0; i < n1.length; i++) {
+    let index = n2.indexOf(n1[i]);
+    if (index !== -1) {
+      n1.splice(i, 1);
+      n2.splice(index, 1);
+      i--;
     }
-    const map = {
-      F: "💙 FRIENDS",
-      L: "❤️ LOVE",
-      A: "💛 AFFECTION",
-      M: "💍 MARRIAGE",
-      E: "💢 ENEMIES",
-      S: "🤝 SIBLINGS"
-    };
-    setResult(map[flames[0]]);
+  }
+
+  let count = n1.length + n2.length;
+
+  let flames = ["F", "L", "A", "M", "E", "S"];
+  let index = 0;
+
+  while (flames.length > 1) {
+    index = (index + count - 1) % flames.length;
+    flames.splice(index, 1);
+  }
+
+  const map = {
+    F: "💙 FRIENDS",
+    L: "❤️ LOVE",
+    A: "💛 AFFECTION",
+    M: "💍 MARRIAGE",
+    E: "💢 ENEMIES",
+    S: "🤝 SIBLINGS",
   };
+
+  const finalResult = map[flames[0]]; // ✅ store locally
+  setResult(finalResult);
+
+  if (consent) {
+    fetch("/.netlify/functions/logNames", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name1,
+        name2,
+        result: finalResult, // ✅ correct value
+        timestamp: new Date().toISOString(),
+      }),
+    });
+  }
+};
+
 
   return (
     <div className="
@@ -86,6 +110,20 @@ const App = () => {
             onChange={(e)=>setName2(e.target.value)}
           />
         </div>
+        <div className="mt-4 text-sm text-white/80">
+  <label className="flex items-start gap-2 cursor-pointer">
+    <input
+      type="checkbox"
+      checked={consent}
+      onChange={(e) => setConsent(e.target.checked)}
+      className="mt-1 accent-blue-500"
+    />
+    <span>
+      I agree that the entered names may be stored for fun analytics purposes.
+    </span>
+  </label>
+</div>
+
 
         {/* Button */}
         <button
