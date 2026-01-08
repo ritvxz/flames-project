@@ -6,12 +6,22 @@ export async function handler(event) {
     };
   }
 
-  const data = JSON.parse(event.body);
+  try {
+    const data = JSON.parse(event.body);
 
-  console.log("CONSENTED USER DATA:", data);
+    // 🔥 THIS IS WHAT MAKES LOGS VISIBLE
+    console.log("CONSENTED USER DATA:", data);
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ message: "Data logged successfully" }),
-  };
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ message: "Logged successfully" }),
+    };
+  } catch (error) {
+    console.error("ERROR:", error);
+
+    return {
+      statusCode: 500,
+      body: "Server Error",
+    };
+  }
 }
